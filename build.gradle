@@ -27,6 +27,7 @@ allprojects {
         box2DLightsVersion = '1.4'
         ashleyVersion = '1.7.0'
         aiVersion = '1.8.0'
+        lombokVersion = '1.18.12'
     }
 
     repositories {
@@ -41,14 +42,14 @@ allprojects {
 
 project(":desktop") {
     apply plugin: "java-library"
-
+    apply plugin: "war"
 
     dependencies {
         implementation project(":core")
         api "com.badlogicgames.gdx:gdx-backend-lwjgl:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
         api "com.badlogicgames.gdx:gdx-box2d-platform:$gdxVersion:natives-desktop"
-        
+        providedCompile "org.projectlombok:lombok:$lombokVersion"
     }
 }
 
@@ -67,19 +68,19 @@ project(":html") {
         api "com.badlogicgames.gdx:gdx-box2d-gwt:$gdxVersion:sources"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion:sources"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion:sources"
-        
+        providedCompile "org.projectlombok:lombok:$lombokVersion"
     }
 }
 
 project(":core") {
     apply plugin: "java-library"
-
+    apply plugin: "war"
 
     dependencies {
         api "com.badlogicgames.gdx:gdx:$gdxVersion"
         api "com.badlogicgames.gdx:gdx-box2d:$gdxVersion"
         api "com.badlogicgames.box2dlights:box2dlights:$box2DLightsVersion"
         api "com.badlogicgames.gdx:gdx-ai:$aiVersion"
-        
+        providedCompile "org.projectlombok:lombok:$lombokVersion"
     }
 }
