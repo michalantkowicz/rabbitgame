@@ -2,34 +2,52 @@ package com.mantkowdev.rabbitgame;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
-import static java.util.Collections.singletonList;
+import static java.util.Optional.empty;
 
 public class GameEventService {
-    private final Map<String, List<GameEventHandler>> handlers = new HashMap<>();
-    private final List<GameEventHandler> dlqList = singletonList(new DlqHandler());
+    private Map<Class<? extends GameEvent>, Map<String, List<GameEvent>>> queue = new HashMap<>();
 
-    public void registerHandler(String topic, GameEventHandler handler) {
-        handlers
-                .computeIfAbsent(topic, value -> new ArrayList<>())
-                .add(handler);
+    public <T extends GameEvent> void pushEvent(T gameEvent) {
+        queue
+                .computeIfAbsent(gameEvent.getClass(), event -> new HashMap<>())
+                .computeIfAbsent(gameEvent.getTopic(), event -> new ArrayList<>())
+                .add(gameEvent);
     }
 
-    public void sendEvent(GameEvent event) {
-        handlers
-                .getOrDefault(event.getTopic(), dlqList)
-                .forEach(handler -> handler.handle(event));
+    @SuppressWarnings("unchecked")
+    public <T extends GameEvent> Optional<T> getEvent(Class<T> type, String topic) {
+        if (queue.containsKey(type) && queue.get(type).containsKey(topic)) {
+            return (Optional<T>) queue.get(type).get(topic).stream().findFirst();
+        } else {
+            return empty();
+        }
     }
 
-    private class DlqHandler implements GameEventHandler {
-        private final List<GameEvent> store = new LinkedList<>();
+    /**
+     * this method should be called at the end of main loop of the application to provide housekeeping
+     */
+    public void update() {
+        for (Class<? extends GameEvent> eventType : queue.keySet()) {
+            for (String eventTopic : queue.get(eventType).keySet()) {
+                updateEvents(eventType, eventTopic);
+            }
+        }
+    }
 
-        @Override
-        public void handle(GameEvent event) {
-            store.add(event);
+    private void updateEvents(Class<? extends GameEvent> eventType, String eventTopic) {
+        Iterator<GameEvent> iterator = queue.get(eventType).get(eventTopic).iterator();
+
+        while (iterator.hasNext()) {
+            GameEvent gameEvent = iterator.next();
+            gameEvent.increaseAge();
+            if (gameEvent.isTooOld()) {
+                iterator.remove();
+            }
         }
     }
 }

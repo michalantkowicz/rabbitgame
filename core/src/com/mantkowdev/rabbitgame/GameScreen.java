@@ -31,12 +31,11 @@ public class GameScreen implements Screen {
         frames.add(new TextureRegion(assetManager.get("3.png", Texture.class)));
         frames.add(new TextureRegion(assetManager.get("2.png", Texture.class)));
 
-        Player player = new Player(frames);
+        Player player = new Player(frames, gameEventService);
         player.setPosition(200, 150);
         stage.addActor(player);
 
         String playerSteeringTopic = "steering_player";
-        gameEventService.registerHandler(playerSteeringTopic, player);
 
         Feature playerSteering = new KeyboardSteeringFeature(playerSteeringTopic, gameEventService);
         features.add(playerSteering);
@@ -67,6 +66,7 @@ public class GameScreen implements Screen {
         stage.draw();
 
         features.forEach(Feature::act);
+        gameEventService.update();
     }
 
     @Override

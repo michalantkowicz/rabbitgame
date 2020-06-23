@@ -24,6 +24,6 @@ public class KeyboardSteeringFeature implements Feature {
     }
 
     private void sendEvent(String value) {
-        gameEventService.sendEvent(GameEvent.builder().topic(topic).value(value).build());
+        gameEventService.pushEvent(new GameEvent<>(value, topic, 2));
     }
 }
