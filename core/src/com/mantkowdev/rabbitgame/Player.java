@@ -24,7 +24,7 @@ public class Player extends Group {
         super();
         animation = new Animation<>(0.25f, frames, LOOP);
         this.gameEventService = gameEventService;
-        setSize(50f, 50f);
+        setSize(30f, 30f);
     }
 
     @Override
@@ -55,7 +55,6 @@ public class Player extends Group {
     @Override
     public void draw(Batch batch, float parentAlpha) {
         super.draw(batch, parentAlpha);
-        System.out.println("X = " + getX() + ", Y = " + getY());
         batch.draw(animation.getKeyFrame(stateTime, true), getX(), getY(), getWidth(), getHeight());
     }
 

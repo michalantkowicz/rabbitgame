@@ -9,6 +9,10 @@ import com.badlogic.gdx.assets.loaders.TextureLoader.TextureParameter;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayer;
+import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
 public class Main extends Game {
     public final static float WIDTH = 1280f;
@@ -26,6 +30,7 @@ public class Main extends Game {
         assetManager.load("2.png", Texture.class, params);
         assetManager.load("3.png", Texture.class, params);
         assetManager.finishLoading();
+
         setScreen(new GameScreen(assetManager));
     }
 
