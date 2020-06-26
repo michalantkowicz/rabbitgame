@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Optional;
 
 import static com.badlogic.gdx.graphics.g2d.Animation.PlayMode.LOOP;
+import static java.lang.Math.round;
 
 public class Player extends Group {
     private final Animation<TextureRegion> animation;
@@ -17,7 +18,6 @@ public class Player extends Group {
     private float stateTime = 0f;
 
     private Velocity velocity = new Velocity(2f);
-    private float maxVelocity = 2f;
 
 
     public Player(Array<? extends TextureRegion> frames, GameEventService gameEventService) {
@@ -45,8 +45,7 @@ public class Player extends Group {
         } else {
             if (velocity.getX() != 0) {
                 handleVerticalAlignment(getX() + velocity.getX());
-            }
-            if (velocity.getY() != 0) {
+            } else if (velocity.getY() != 0) {
                 handleHorizontalAlignment(getY() + velocity.getY());
             }
         }
@@ -70,44 +69,58 @@ public class Player extends Group {
         }
     }
 
-    private void handleVerticalAlignment(float x) {
-        for (int i = 1; i <= 20; i++) {
-            if (!willCollide(x, (int) getY() + i)) {
+    private boolean handleVerticalAlignment(float x) {
+        int y = round(getY());
+
+        for (int i = 1; i <= 15; i++) {
+            if (!willCollide(x, y)) {
+                setY(y); // position rounding issue
+                return true;
+            } else if (!willCollide(x, y + i)) {
                 if (i > 1) {
-                    setY((int) getY() + velocity.getMaxVelocity());
+                    setY(y + velocity.getMaxVelocity());
                 } else {
-                    setY((int) getY() + 1);
+                    setY(y + 1);
                 }
-                break;
-            } else if (!willCollide(x, (int) getY() - i)) {
+                return true;
+            } else if (!willCollide(x, y - i)) {
                 if (i > 1) {
-                    setY((int) getY() - velocity.getMaxVelocity());
+                    setY(y - velocity.getMaxVelocity());
                 } else {
-                    setY((int) getY() - 1);
+                    setY(y - 1);
                 }
-                break;
+                return true;
             }
         }
+
+        return false;
     }
 
-    private void handleHorizontalAlignment(float y) {
-        for (int i = 1; i <= 20; i++) {
-            if (!willCollide((int) getX() + i, y)) {
+    private boolean handleHorizontalAlignment(float y) {
+        int x = round(getX());
+
+        for (int i = 1; i <= 15; i++) {
+            if (!willCollide(x, y)) {
+                setX(x); // position rounding issue
+                return true;
+            } else if (!willCollide(x + i, y)) {
                 if (i > 1) {
-                    setX((int) getX() + velocity.getMaxVelocity());
+                    setX(x + velocity.getMaxVelocity());
                 } else {
-                    setX((int) getX() + 1);
+                    setX(x + 1);
                 }
-                break;
-            } else if (!willCollide((int) getX() - i, y)) {
+                return true;
+            } else if (!willCollide(x - i, y)) {
                 if (i > 1) {
-                    setX((int) getX() - velocity.getMaxVelocity());
+                    setX(x - velocity.getMaxVelocity());
                 } else {
-                    setX((int) getX() - 1);
+                    setX(x - 1);
                 }
-                break;
+                return true;
             }
         }
+
+        return false;
     }
 
     private boolean willCollide(float x, float y) {
