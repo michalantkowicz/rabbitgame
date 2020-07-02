@@ -4,14 +4,14 @@ import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMap;
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.mantkowdev.rabbitgame.map.GameMap;
+import com.mantkowdev.rabbitgame.map.MapLoader;
+import com.mantkowdev.rabbitgame.map.WallTile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,26 +29,16 @@ public class GameScreen implements Screen {
 
     @Override
     public void show() {
-        Vector2 playerPosition = new Vector2();
+        MapLoader mapLoader = new MapLoader("level1.tmx");
+        GameMap map = mapLoader.load();
 
-        TiledMap map = new TmxMapLoader().load("level1.tmx");
-        TiledMapTileLayer mapLayer = (TiledMapTileLayer) map.getLayers().get(0);
+        map
+                .getWalls()
+                .stream()
+                .map(this::toWallActor)
+                .forEach(stage::addActor);
 
-        for (int x = 0; x < mapLayer.getWidth(); x++) {
-            for (int y = 0; y < mapLayer.getHeight(); y++) {
-                TiledMapTileLayer.Cell cell = mapLayer.getCell(x, y);
-                String cellType = (String) cell.getTile().getProperties().get("TYPE");
-                if (cellType.equals("WALL")) {
-                    Actor wall = new Actor();
-                    wall.debug();
-                    wall.setSize(10, 10);
-                    wall.setPosition(x * 10, y * 10);
-                    stage.addActor(wall);
-                } else if (cellType.equals("PLAYER")) {
-                    playerPosition.set(x * 10, y * 10);
-                }
-            }
-        }
+        Vector2 playerPosition = map.getPlayers().get(0).getPosition().scl(10f);
 
         Array<TextureRegion> frames = new Array<>();
         frames.add(new TextureRegion(assetManager.get("1.png", Texture.class)));
@@ -74,6 +64,14 @@ public class GameScreen implements Screen {
 
         features.forEach(Feature::act);
         gameEventService.update();
+    }
+
+    private Actor toWallActor(WallTile wallTile) {
+        Actor a = new Actor();
+        a.debug();
+        a.setSize(10, 10);
+        a.setPosition(wallTile.getPosition().x * 10, wallTile.getPosition().y * 10);
+        return a;
     }
 
     @Override
