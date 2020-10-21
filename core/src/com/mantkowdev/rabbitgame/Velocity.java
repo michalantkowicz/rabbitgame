@@ -17,7 +17,6 @@ public class Velocity {
     private float x, y;
 
     void stop() {
-
         if (x > 0) {
             x = max(0f, x / FRICTION_FACTOR - MIN_STEP);
         } else {

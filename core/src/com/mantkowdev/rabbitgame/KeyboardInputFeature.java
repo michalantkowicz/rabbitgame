@@ -5,7 +5,7 @@ import com.badlogic.gdx.Input;
 import lombok.RequiredArgsConstructor;
 
 @RequiredArgsConstructor
-public class KeyboardSteeringFeature implements Feature {
+public class KeyboardInputFeature implements Feature {
     private final String topic;
     private final GameEventService gameEventService;
 
@@ -24,6 +24,6 @@ public class KeyboardSteeringFeature implements Feature {
     }
 
     private void sendEvent(String value) {
-        gameEventService.pushEvent(new GameEvent<>(value, topic, 2));
+        gameEventService.pushEvent(new SteeringEvent(value, topic, 2));
     }
 }

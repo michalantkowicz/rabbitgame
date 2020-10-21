@@ -1,11 +1,11 @@
 package com.mantkowdev.rabbitgame.map;
 
-import com.badlogic.gdx.math.Vector2;
+import com.mantkowdev.rabbitgame.Tuple;
 import lombok.Value;
 
 @Value
 public class PlayerTile implements Tile {
-    private final Vector2 position;
+    private final Tuple<Integer> coordinates;
 
     @Override
     public TileType getTileType() {
