@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
+import com.mantkowdev.rabbitgame.actors.Player;
 import com.mantkowdev.rabbitgame.map.GameMap;
 import com.mantkowdev.rabbitgame.map.MapLoader;
 import com.mantkowdev.rabbitgame.map.WallTile;
@@ -52,7 +53,8 @@ public class GameScreen implements Screen {
 
         Player player = Player.builder()
                 .animation(new Animation<>(0.25f, frames, LOOP))
-                .plugin(new SteeringPlugin(gameEventService))
+//                .plugin(new SteeringPlugin(gameEventService))
+                .plugin(new GameMapMovePlugin(map, gameEventService))
                 .position(playerPosition)
                 .size(new Vector2(30f, 30f))
                 .build();

@@ -1,11 +1,15 @@
 package com.mantkowdev.rabbitgame;
 
-import com.badlogic.gdx.math.Vector2;
+import com.mantkowdev.rabbitgame.actors.Player;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
 import java.util.Optional;
 
+import static com.mantkowdev.rabbitgame.SteeringDirection.DOWN;
+import static com.mantkowdev.rabbitgame.SteeringDirection.LEFT;
+import static com.mantkowdev.rabbitgame.SteeringDirection.RIGHT;
+import static com.mantkowdev.rabbitgame.SteeringDirection.UP;
 import static java.lang.Math.round;
 
 @RequiredArgsConstructor
@@ -15,7 +19,7 @@ public class SteeringPlugin implements Plugin<Player> {
     private final Velocity velocity = new Velocity(2f);
 
     @Override
-    public void handle(Player player) {
+    public void handle(Player object) {
         Optional<SteeringEvent> event = gameEventService.getEvent(SteeringEvent.class, "steering_player");
 
         if (event.isPresent()) {
@@ -24,26 +28,26 @@ public class SteeringPlugin implements Plugin<Player> {
             velocity.stop();
         }
 
-        if (!willCollide(player, player.getX() + velocity.getX(), player.getY() + velocity.getY())) {
-            player.setX(player.getX() + velocity.getX());
-            player.setY(player.getY() + velocity.getY());
+        if (!willCollide(object, object.getX() + velocity.getX(), object.getY() + velocity.getY())) {
+            object.setX(object.getX() + velocity.getX());
+            object.setY(object.getY() + velocity.getY());
         } else {
             if (velocity.getX() != 0) {
-                handleVerticalAlignment(player, player.getX() + velocity.getX());
+                handleVerticalAlignment(object, object.getX() + velocity.getX());
             } else if (velocity.getY() != 0) {
-                handleHorizontalAlignment(player, player.getY() + velocity.getY());
+                handleHorizontalAlignment(object, object.getY() + velocity.getY());
             }
         }
     }
 
     public void doHandle(GameEvent event) {
-        if (event.getEventObject().equals("UP")) {
+        if (event.getEventObject() == UP) {
             velocity.setUp();
-        } else if (event.getEventObject().equals("DOWN")) {
+        } else if (event.getEventObject() == DOWN) {
             velocity.setDown();
-        } else if (event.getEventObject().equals("LEFT")) {
+        } else if (event.getEventObject() == LEFT) {
             velocity.setLeft();
-        } else if (event.getEventObject().equals("RIGHT")) {
+        } else if (event.getEventObject() == RIGHT) {
             velocity.setRight();
         }
     }

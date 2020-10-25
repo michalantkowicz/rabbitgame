@@ -1,17 +1,18 @@
-package com.mantkowdev.rabbitgame;
+package com.mantkowdev.rabbitgame.actors;
 
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.scenes.scene2d.Group;
+import com.mantkowdev.rabbitgame.Plugin;
+import com.mantkowdev.rabbitgame.api.GameActor;
 import lombok.Builder;
 import lombok.NonNull;
 import lombok.Singular;
 
 import java.util.List;
 
-public class Player extends Group {
+public class Player extends GameActor {
     private Animation<TextureRegion> animation;
     private List<Plugin<Player>> plugins;
 
