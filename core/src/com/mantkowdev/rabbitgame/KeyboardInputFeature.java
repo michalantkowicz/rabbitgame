@@ -4,10 +4,10 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import lombok.RequiredArgsConstructor;
 
-import static com.mantkowdev.rabbitgame.SteeringDirection.DOWN;
-import static com.mantkowdev.rabbitgame.SteeringDirection.LEFT;
-import static com.mantkowdev.rabbitgame.SteeringDirection.RIGHT;
-import static com.mantkowdev.rabbitgame.SteeringDirection.UP;
+import static com.mantkowdev.rabbitgame.Direction.DOWN;
+import static com.mantkowdev.rabbitgame.Direction.LEFT;
+import static com.mantkowdev.rabbitgame.Direction.RIGHT;
+import static com.mantkowdev.rabbitgame.Direction.UP;
 
 @RequiredArgsConstructor
 public class KeyboardInputFeature implements Feature {
@@ -28,7 +28,7 @@ public class KeyboardInputFeature implements Feature {
         }
     }
 
-    private void sendEvent(SteeringDirection direction) {
+    private void sendEvent(Direction direction) {
         gameEventService.pushEvent(new SteeringEvent(direction, topic, 2));
     }
 }

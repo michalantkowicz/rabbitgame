@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static com.mantkowdev.rabbitgame.SteeringDirection.DOWN;
-import static com.mantkowdev.rabbitgame.SteeringDirection.LEFT;
-import static com.mantkowdev.rabbitgame.SteeringDirection.RIGHT;
-import static com.mantkowdev.rabbitgame.SteeringDirection.UP;
+import static com.mantkowdev.rabbitgame.Direction.DOWN;
+import static com.mantkowdev.rabbitgame.Direction.LEFT;
+import static com.mantkowdev.rabbitgame.Direction.RIGHT;
+import static com.mantkowdev.rabbitgame.Direction.UP;
 import static java.lang.Math.round;
 
 @RequiredArgsConstructor

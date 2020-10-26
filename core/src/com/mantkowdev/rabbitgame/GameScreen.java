@@ -13,6 +13,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mantkowdev.rabbitgame.actors.Player;
 import com.mantkowdev.rabbitgame.map.GameMap;
 import com.mantkowdev.rabbitgame.map.MapLoader;
+import com.mantkowdev.rabbitgame.map.PathTile;
 import com.mantkowdev.rabbitgame.map.WallTile;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class GameScreen implements Screen {
                 .forEach(stage::addActor);
 
         Tuple<Integer> coordinates = map.getPlayers().get(0).getCoordinates();
-        Vector2 playerPosition = new Vector2(coordinates.a, coordinates.b).scl(10f);
+        Vector2 playerPosition = new Vector2(coordinates.a, coordinates.b).scl(PathTile.WIDTH);
 
         Array<TextureRegion> frames = new Array<>();
         frames.add(new TextureRegion(assetManager.get("1.png", Texture.class)));
@@ -54,7 +55,8 @@ public class GameScreen implements Screen {
         Player player = Player.builder()
                 .animation(new Animation<>(0.25f, frames, LOOP))
 //                .plugin(new SteeringPlugin(gameEventService))
-                .plugin(new GameMapMovePlugin(map, gameEventService))
+//                .plugin(new GameMapMovePlugin(map, gameEventService))
+                .plugin(new PathMovingPlugin(map, gameEventService))
                 .position(playerPosition)
                 .size(new Vector2(30f, 30f))
                 .build();
