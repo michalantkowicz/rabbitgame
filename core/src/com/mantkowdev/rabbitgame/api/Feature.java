@@ -1,4 +1,4 @@
-package com.mantkowdev.rabbitgame;
+package com.mantkowdev.rabbitgame.api;
 
 public interface Feature {
     void act();

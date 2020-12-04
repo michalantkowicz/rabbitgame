@@ -1,4 +1,6 @@
-package com.mantkowdev.rabbitgame;
+package com.mantkowdev.rabbitgame.events;
+
+import com.mantkowdev.rabbitgame.api.GameEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,10 +46,10 @@ public class GameEventService {
 
         while (iterator.hasNext()) {
             GameEvent gameEvent = iterator.next();
-            gameEvent.increaseAge();
             if (gameEvent.isTooOld()) {
                 iterator.remove();
             }
+            gameEvent.increaseAge();
         }
     }
 }

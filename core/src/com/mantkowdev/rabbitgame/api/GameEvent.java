@@ -1,8 +1,8 @@
-package com.mantkowdev.rabbitgame;
+package com.mantkowdev.rabbitgame.api;
 
 import lombok.Getter;
 
-abstract class GameEvent<T> {
+public abstract class GameEvent<T> {
     private static final int IMMORTAL = Integer.MIN_VALUE;
 
     @Getter
@@ -17,7 +17,7 @@ abstract class GameEvent<T> {
      * @param maxAge how much loops event lives, must be greater or equal 0
      * @throws IllegalArgumentException if maxAge < 0
      */
-    GameEvent(T eventObject, String topic, int maxAge) {
+    public GameEvent(T eventObject, String topic, int maxAge) {
         this.eventObject = eventObject;
         this.topic = topic;
         if (maxAge != IMMORTAL && maxAge < 0) {
@@ -27,11 +27,11 @@ abstract class GameEvent<T> {
         this.age = 0;
     }
 
-    void increaseAge() {
+    public void increaseAge() {
         age++;
     }
 
-    boolean isTooOld() {
+    public boolean isTooOld() {
         return (maxAge != IMMORTAL) && (age >= maxAge);
     }
 }

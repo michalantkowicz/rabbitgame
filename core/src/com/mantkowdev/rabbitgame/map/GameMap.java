@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Value;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -17,12 +18,14 @@ import static java.util.stream.Collectors.toMap;
 public class GameMap {
     private final List<WallTile> walls;
     private final List<PlayerTile> players;
+    private final List<TargetTile> targets;
     private final Map<Tuple<Integer>, PathTile> path;
 
     @Builder
-    public GameMap(List<WallTile> walls, List<PlayerTile> players, List<PathTile> pathTiles) {
+    public GameMap(List<WallTile> walls, List<PlayerTile> players, List<TargetTile> targets, List<PathTile> pathTiles) {
         this.walls = walls;
         this.players = players;
+        this.targets = targets;
         path = pathTiles.stream().collect(toMap(PathTile::getCoordinates, identity()));
         path.values().forEach(this::updateNeighbours);
 
@@ -85,4 +88,6 @@ public class GameMap {
         Tuple<Integer> tileCoordinates = Tuple.of((int) Math.floor(position.a / PathTile.WIDTH), (int) Math.floor(position.b / PathTile.WIDTH));
         return Optional.ofNullable(path.get(tileCoordinates));
     }
+
+
 }

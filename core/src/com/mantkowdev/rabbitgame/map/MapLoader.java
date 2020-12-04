@@ -2,8 +2,7 @@ package com.mantkowdev.rabbitgame.map;
 
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.mantkowdev.rabbitgame.Path;
-import com.mantkowdev.rabbitgame.PathNode;
+import com.mantkowdev.rabbitgame.api.Tile;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -11,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static com.mantkowdev.rabbitgame.Tuple.of;
 import static com.mantkowdev.rabbitgame.map.TileFactory.produceTile;
 import static com.mantkowdev.rabbitgame.map.TileType.PATH;
 import static com.mantkowdev.rabbitgame.map.TileType.PLAYER;
+import static com.mantkowdev.rabbitgame.map.TileType.TARGET;
 import static com.mantkowdev.rabbitgame.map.TileType.WALL;
 
 @RequiredArgsConstructor
@@ -26,18 +25,11 @@ public class MapLoader {
         final List<Tile> tiles = loadTiles();
 
         return GameMap.builder()
-                .path(createPath(tiles))
+                .pathTiles(filterByType(tiles, PATH))
                 .walls(filterByType(tiles, WALL))
                 .players(filterByType(tiles, PLAYER))
+                .targets(filterByType(tiles, TARGET))
                 .build();
-    }
-
-    private Path createPath(List<Tile> tiles) {
-        final Path.PathBuilder pathBuilder = Path.builder();
-        tiles.stream()
-                .filter(tile -> tile.getTileType() == PATH)
-                .forEach(tile -> pathBuilder.pathNode(of(tile.getCoordinates().a, tile.getCoordinates().b), new PathNode()));
-        return pathBuilder.build();
     }
 
     private List<Tile> loadTiles() {

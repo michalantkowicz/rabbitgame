@@ -5,11 +5,11 @@ import com.mantkowdev.rabbitgame.api.Tile;
 import lombok.Value;
 
 @Value
-public class PlayerTile implements Tile {
+public class TargetTile implements Tile {
     private final Tuple<Integer> coordinates;
 
     @Override
     public TileType getTileType() {
-        return TileType.PLAYER;
+        return TileType.TARGET;
     }
 }

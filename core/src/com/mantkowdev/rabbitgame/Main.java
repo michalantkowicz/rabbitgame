@@ -29,6 +29,13 @@ public class Main extends Game {
         assetManager.load("1.png", Texture.class, params);
         assetManager.load("2.png", Texture.class, params);
         assetManager.load("3.png", Texture.class, params);
+        assetManager.load("11.png", Texture.class, params);
+        assetManager.load("22.png", Texture.class, params);
+        assetManager.load("33.png", Texture.class, params);
+        assetManager.load("r1.png", Texture.class, params);
+        assetManager.load("r2.png", Texture.class, params);
+        assetManager.load("r3.png", Texture.class, params);
+        assetManager.load("coin.png", Texture.class, params);
         assetManager.finishLoading();
 
         setScreen(new GameScreen(assetManager));

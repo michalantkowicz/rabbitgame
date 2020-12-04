@@ -5,7 +5,7 @@ import lombok.Getter;
 
 @AllArgsConstructor
 public enum TileType {
-    WALL("WALL"), PLAYER("PLAYER"), PATH("PATH");
+    WALL("WALL"), PLAYER("PLAYER"), PATH("PATH"), TARGET("TARGET");
 
     @Getter
     private String code;

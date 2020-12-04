@@ -12,16 +12,16 @@ import lombok.Singular;
 
 import java.util.List;
 
-public class Player extends GameActor {
+public class Target extends GameActor {
     private Animation<TextureRegion> animation;
-    private List<Plugin<Player>> plugins;
+    private List<Plugin<Target>> plugins;
 
     private float stateTime = 0f;
 
     @Builder
-    public Player(
+    public Target(
             Animation<TextureRegion> animation,
-            @Singular List<Plugin<Player>> plugins,
+            @Singular List<Plugin<Target>> plugins,
             @NonNull Vector2 position,
             @NonNull Vector2 size
     ) {
