@@ -1,11 +1,11 @@
 package com.mantkowdev.rabbitgame.plugins;
 
 import com.mantkowdev.rabbitgame.Direction;
+import com.mantkowdev.rabbitgame.api.GameActor;
 import com.mantkowdev.rabbitgame.api.Plugin;
 import com.mantkowdev.rabbitgame.events.GameEventService;
 import com.mantkowdev.rabbitgame.events.PositionEvent;
 import com.mantkowdev.rabbitgame.events.SteeringEvent;
-import com.mantkowdev.rabbitgame.api.GameActor;
 import com.mantkowdev.rabbitgame.map.GameMap;
 import com.mantkowdev.rabbitgame.map.PathTile;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -103,7 +104,7 @@ public class SafeNeighbourSteeringPlugin<T extends GameActor> implements Plugin<
                     }
                 }
 
-                if(!currentTargetPath.isEmpty()) {
+                if (!currentTargetPath.isEmpty()) {
                     PathTile finalTargetTile = currentTargetPath.remove(0);
                     System.out.println("CURRENT: " + finalTargetTile.getCoordinates() + ", " + object.getCenter());
                     Optional<Direction> first = currentTile
@@ -119,7 +120,7 @@ public class SafeNeighbourSteeringPlugin<T extends GameActor> implements Plugin<
                 }
             }
         }
-        if(currentDirection != null) {
+        if (currentDirection != null) {
             gameEventService.pushEvent(new SteeringEvent(currentDirection, steeringTopic, 0));
         }
     }
@@ -142,38 +143,54 @@ public class SafeNeighbourSteeringPlugin<T extends GameActor> implements Plugin<
     private Map<PathTile, Integer> getCost(List<PathTile> playerTiles) {
         final Map<PathTile, Integer> result = new HashMap<>();
 
-        playerTiles.stream().map(playerTile -> {
-                    final Map<PathTile, Integer> cost = new HashMap<>();
-                    final Set<PathTile> visited = new HashSet<>();
-                    final List<PathTile> queue = new LinkedList<>();
-
-                    queue.add(playerTile);
-                    cost.put(playerTile, 0);
-                    visited.add(playerTile);
-
-                    while (!queue.isEmpty()) {
-                        final PathTile currentTile = queue.remove(0);
-                        for (PathTile neighbour : currentTile.getNeighbours().values()) {
-                            if (!visited.contains(neighbour)) {
-                                queue.add(neighbour);
-                                cost.put(neighbour, cost.get(currentTile) + 1);
-                                visited.add(neighbour);
+        playerTiles
+                .stream()
+                .map(playerTile -> traversePath(
+                        playerTile,
+                        tile -> mapOf(tile, 0),
+                        (map, currentTile, neighbour) -> map.put(neighbour, map.get(currentTile) + 1))
+                ).forEach(cost ->
+                cost.entrySet().stream().forEach(entry -> {
+                            if (!result.containsKey(entry.getKey())) {
+                                result.put(entry.getKey(), entry.getValue());
+                            } else {
+                                result.put(entry.getKey(), Math.min(entry.getValue(), result.get(entry.getKey())));
                             }
                         }
-                    }
-
-                    return cost;
-                }
-        ).forEach(
-                cost ->
-                        cost.entrySet().stream().forEach(entry -> {
-                                    if (!result.containsKey(entry.getKey())) {
-                                        result.put(entry.getKey(), entry.getValue());
-                                    } else {
-                                        result.put(entry.getKey(), Math.min(entry.getValue(), result.get(entry.getKey())));
-                                    }
-                                }
-                        ));
+                ));
         return result;
+    }
+
+    private <U> U traversePath(PathTile startTile, Function<PathTile, U> init, Update<U, PathTile, PathTile> update) {
+        final List<PathTile> queue = new LinkedList<>();
+        queue.add(startTile);
+
+        final Set<PathTile> visited = new HashSet<>();
+        visited.add(startTile);
+
+        final U result = init.apply(startTile);
+
+        while (!queue.isEmpty()) {
+            final PathTile currentTile = queue.remove(0);
+            for (PathTile neighbour : currentTile.getNeighbours().values()) {
+                if (!visited.contains(neighbour)) {
+                    queue.add(neighbour);
+                    visited.add(neighbour);
+                    update.update(result, currentTile, neighbour);
+                }
+            }
+        }
+        return result;
+    }
+
+    @FunctionalInterface
+    private interface Update<Q, W, E> {
+        void update(Q q, W w, E e);
+    }
+
+    private <A, B> Map<A, B> mapOf(A a, B b) {
+        Map<A, B> map = new HashMap<>();
+        map.put(a, b);
+        return map;
     }
 }
