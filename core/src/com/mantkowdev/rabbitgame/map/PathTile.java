@@ -45,6 +45,10 @@ public class PathTile implements Tile {
         return position.a.equals(coordinates.a * WIDTH + WIDTH / 2f) && position.b.equals(coordinates.b * WIDTH + WIDTH / 2f);
     }
 
+    public int getCoins() {
+        return isCoin() ? 1 : 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
