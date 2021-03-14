@@ -13,9 +13,11 @@ import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 import com.mantkowdev.rabbitgame.actors.Player;
 import com.mantkowdev.rabbitgame.actors.Target;
-import com.mantkowdev.rabbitgame.events.GameEventService;
-import com.mantkowdev.rabbitgame.features.CollectingCoinFeature;
 import com.mantkowdev.rabbitgame.api.Feature;
+import com.mantkowdev.rabbitgame.api.Plugin;
+import com.mantkowdev.rabbitgame.events.GameEventService;
+import com.mantkowdev.rabbitgame.features.CatchingTargetFeature;
+import com.mantkowdev.rabbitgame.features.CollectingCoinFeature;
 import com.mantkowdev.rabbitgame.features.KeyboardInputFeature;
 import com.mantkowdev.rabbitgame.map.GameMap;
 import com.mantkowdev.rabbitgame.map.MapLoader;
@@ -24,6 +26,7 @@ import com.mantkowdev.rabbitgame.map.WallTile;
 import com.mantkowdev.rabbitgame.plugins.BroadcastPositionPlugin;
 import com.mantkowdev.rabbitgame.plugins.PathMovingPlugin;
 import com.mantkowdev.rabbitgame.plugins.SafeNeighbourSteeringPlugin;
+import com.mantkowdev.rabbitgame.plugins.TrackingTargetSteeringPlugin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -45,6 +48,7 @@ public class GameScreen implements Screen {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void show() {
         MapLoader mapLoader = new MapLoader("level1.tmx");
         GameMap map = mapLoader.load();
@@ -64,42 +68,53 @@ public class GameScreen implements Screen {
 
         coins.values().forEach(stage::addActor);
 
-        Tuple<Integer> coordinates = map.getPlayers().get(0).getCoordinates();
-        Vector2 playerPosition = new Vector2(coordinates.a, coordinates.b).scl(PathTile.WIDTH);
+        Player player = createPlayer(
+                map,
+                0,
+                Arrays.asList("1", "2", "3", "2"),
+                Arrays.asList(
+                        new PathMovingPlugin(map, gameEventService, "steering_player"),
+                        new BroadcastPositionPlugin(gameEventService, "player_position")
+                )
+        );
 
-        Tuple<Integer> coordinates2 = map.getPlayers().get(1).getCoordinates();
-        Vector2 playerPosition2 = new Vector2(coordinates2.a, coordinates2.b).scl(PathTile.WIDTH);
+        Player player2 = createPlayer(
+                map,
+                1,
+                Arrays.asList("11", "22", "33", "22"),
+                Arrays.asList(
+                        new TrackingTargetSteeringPlugin(map, gameEventService, Arrays.asList("target_position", "target_position2"), Arrays.asList("player_position", "player_position3", "player_position4"), "steering_player2"),
+                        new PathMovingPlugin(map, gameEventService, "steering_player2"),
+                        new BroadcastPositionPlugin(gameEventService, "player_position2")
+                )
+        );
 
-        Array<TextureRegion> frames = new Array<>();
-        frames.add(new TextureRegion(assetManager.get("1.png", Texture.class)));
-        frames.add(new TextureRegion(assetManager.get("2.png", Texture.class)));
-        frames.add(new TextureRegion(assetManager.get("3.png", Texture.class)));
-        frames.add(new TextureRegion(assetManager.get("2.png", Texture.class)));
+        Player player3 = createPlayer(
+                map,
+                2,
+                Arrays.asList("111", "222", "333", "222"),
+                Arrays.asList(
+                        new TrackingTargetSteeringPlugin(map, gameEventService, Arrays.asList("target_position", "target_position2"), Arrays.asList("player_position", "player_position2", "player_position4"), "steering_player3"),
+                        new PathMovingPlugin(map, gameEventService, "steering_player3"),
+                        new BroadcastPositionPlugin(gameEventService, "player_position3")
+                )
+        );
 
-        Player player = Player.builder()
-                .animation(new Animation<>(0.25f, frames, LOOP))
-                .plugin(new PathMovingPlugin(map, gameEventService, "steering_player"))
-                .plugin(new BroadcastPositionPlugin(gameEventService, "player_position"))
-                .position(playerPosition)
-                .size(new Vector2(30f, 30f))
-                .build();
-
-        Array<TextureRegion> frames2 = new Array<>();
-        frames2.add(new TextureRegion(assetManager.get("11.png", Texture.class)));
-        frames2.add(new TextureRegion(assetManager.get("22.png", Texture.class)));
-        frames2.add(new TextureRegion(assetManager.get("33.png", Texture.class)));
-        frames2.add(new TextureRegion(assetManager.get("22.png", Texture.class)));
-
-//        Player player2 = Player.builder()
-//                .animation(new Animation<>(0.25f, frames2, LOOP))
-//                .plugin(new PathMovingPlugin(map, gameEventService, "steering_player2"))
-//                .plugin(new BroadcastPositionPlugin(gameEventService, "player_position2"))
-//                .position(playerPosition2)
-//                .size(new Vector2(30f, 30f))
-//                .build();
+        Player player4 = createPlayer(
+                map,
+                3,
+                Arrays.asList("1111", "2222", "3333", "2222"),
+                Arrays.asList(
+                        new TrackingTargetSteeringPlugin(map, gameEventService, Arrays.asList("target_position", "target_position2"), Arrays.asList("player_position", "player_position2", "player_position3"), "steering_player4"),
+                        new PathMovingPlugin(map, gameEventService, "steering_player4"),
+                        new BroadcastPositionPlugin(gameEventService, "player_position4")
+                )
+        );
 
         stage.addActor(player);
-//        stage.addActor(player2);
+        stage.addActor(player2);
+        stage.addActor(player3);
+        stage.addActor(player4);
 
         Array<TextureRegion> rframes = new Array<>();
         rframes.add(new TextureRegion(assetManager.get("r1.png", Texture.class)));
@@ -112,18 +127,53 @@ public class GameScreen implements Screen {
 
         Target target = Target.builder()
                 .animation(new Animation<>(0.25f, rframes, LOOP))
-                .plugin(new SafeNeighbourSteeringPlugin(map, gameEventService, Arrays.asList("player_position", "player_position2"), "steering_target"))
+                .plugin(new SafeNeighbourSteeringPlugin(map, gameEventService, Arrays.asList("player_position", "player_position2", "player_position3", "player_position4"), "steering_target"))
                 .plugin(new PathMovingPlugin(map, gameEventService, "steering_target"))
                 .plugin(new BroadcastPositionPlugin(gameEventService, "target_position"))
                 .position(targetPosition)
                 .size(new Vector2(30f, 30f))
                 .build();
 
+        Tuple<Integer> targetCoordinates2 = map.getTargets().get(5).getCoordinates();
+        Vector2 targetPosition2 = new Vector2(targetCoordinates2.a, targetCoordinates2.b).scl(PathTile.WIDTH);
+
+        Target target2 = Target.builder()
+                .animation(new Animation<>(0.25f, rframes, LOOP))
+                .plugin(new SafeNeighbourSteeringPlugin(map, gameEventService, Arrays.asList("player_position", "player_position2", "player_position3", "player_position4"), "steering_target2"))
+                .plugin(new PathMovingPlugin(map, gameEventService, "steering_target2"))
+                .plugin(new BroadcastPositionPlugin(gameEventService, "target_position2"))
+                .position(targetPosition2)
+                .size(new Vector2(30f, 30f))
+                .build();
+
         stage.addActor(target);
+        stage.addActor(target2);
 
         Feature playerSteering = new KeyboardInputFeature("steering_player", "steering_player2", gameEventService);
         features.add(playerSteering);
         features.add(new CollectingCoinFeature(coins, map, gameEventService, "target_position"));
+        features.add(new CollectingCoinFeature(coins, map, gameEventService, "target_position2"));
+
+        //TODO fix this!
+        features.add(new CatchingTargetFeature(1, assetManager, stage, target, map, gameEventService, "target_position", Arrays.asList("player_position", "player_position2", "player_position3", "player_position4")));
+        features.add(new CatchingTargetFeature(1, assetManager, stage, target, map, gameEventService, "target_position2", Arrays.asList("player_position", "player_position2", "player_position3", "player_position4")));
+    }
+
+    private Player createPlayer(GameMap map, int playerIndex, List<String> frameNames, List<Plugin<Player>> plugins) {
+        Array<TextureRegion> frames = new Array<>();
+        frameNames.forEach(name -> frames.add(new TextureRegion(assetManager.get(name + ".png", Texture.class))));
+
+        Tuple<Integer> coordinates = map.getPlayers().get(playerIndex).getCoordinates();
+        Vector2 playerPosition = new Vector2(coordinates.a, coordinates.b).scl(PathTile.WIDTH);
+
+        Player.PlayerBuilder builder = Player.builder()
+                .animation(new Animation<>(0.25f, frames, LOOP))
+                .position(playerPosition)
+                .size(new Vector2(30f, 30f));
+
+        plugins.forEach(builder::plugin);
+
+        return builder.build();
     }
 
     @Override

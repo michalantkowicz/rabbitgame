@@ -32,6 +32,12 @@ public class Main extends Game {
         assetManager.load("11.png", Texture.class, params);
         assetManager.load("22.png", Texture.class, params);
         assetManager.load("33.png", Texture.class, params);
+        assetManager.load("111.png", Texture.class, params);
+        assetManager.load("222.png", Texture.class, params);
+        assetManager.load("333.png", Texture.class, params);
+        assetManager.load("1111.png", Texture.class, params);
+        assetManager.load("2222.png", Texture.class, params);
+        assetManager.load("3333.png", Texture.class, params);
         assetManager.load("r1.png", Texture.class, params);
         assetManager.load("r2.png", Texture.class, params);
         assetManager.load("r3.png", Texture.class, params);
